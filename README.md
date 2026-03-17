@@ -1,17 +1,59 @@
-# React + Vite
+# Quantiva v3.0 — Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend for the Quantiva v3.0 pipeline. Three-route SPA built with React + TailwindCSS, deployed on Vercel.
 
-Currently, two official plugins are available:
+**Live:** https://quantiva-eight.vercel.app/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## Routes
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Path        | Component       | Purpose                                         |
+|-------------|-----------------|-------------------------------------------------|
+| `/`         | `Home`          | Landing page — pipeline overview                |
+| `/analysis` | `Analysis`      | Ticker analysis — EMA/SMA/RSI + benchmark results |
+| `/links`    | `QuantivaLinks` | Service endpoint references                     |
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-# QUANTIVA_V3_CLIENT
+## Stack
+
+| Layer   | Technology         |
+|---------|--------------------|
+| Runtime | React 18 (JSX)     |
+| Styling | TailwindCSS        |
+| Routing | React Router v6    |
+| Deploy  | Vercel             |
+
+---
+
+## Data Source
+
+All data fetched from the orchestrator server (`/initiate-company-analysis`, `/benchmark`). The analysis page accepts a ticker + date range, dispatches to the orchestrator, and renders EMA/SMA/RSI results alongside per-path timing metrics.
+
+---
+
+## Running
+
+```bash
+npm install
+npm run dev
+
+# Production build
+npm run build
+```
+
+Vercel deploys automatically on push to `main`.
+
+---
+
+## Structure
+
+```
+src/
+├── App.jsx
+└── pages/
+    ├── home/main.jsx      # Home
+    ├── analysis/main.jsx  # Analysis
+    └── links/main.jsx     # QuantivaLinks
+```
