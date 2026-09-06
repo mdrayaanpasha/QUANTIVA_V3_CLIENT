@@ -198,19 +198,6 @@ export default function QuantivaLinks() {
 
 
 
-        {/* Cold start notice */}
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6 fade-up" style={{ animationDelay: "120ms" }}>
-          <div className="flex gap-3">
-            <span className="text-amber-500 text-base flex-shrink-0 mt-0.5">⚠</span>
-            <div>
-              <p className="mono text-xs font-medium text-amber-800 mb-1">Expect 30–60s on first load</p>
-              <p className="text-xs text-amber-700 leading-relaxed">
-                All services run on Render's free tier and shut down after 15 min of inactivity. First request triggers a cold start across all 4 microservices.
-              </p>
-            </div>
-          </div>
-        </div>
-
         {/* Repo cards */}
         <p className="mono text-xs text-gray-400 uppercase tracking-wide mb-3 fade-up px-1" style={{ animationDelay: "140ms" }}>
           Repositories & Services
