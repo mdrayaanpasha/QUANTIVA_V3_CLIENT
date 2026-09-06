@@ -60,28 +60,7 @@ const TICKERS = [
   { symbol: "AMGN", name: "Amgen Inc." },
 ];
 
-const API_BASE = "https://quantiva-3-0-service-1.onrender.com";
-
-const WAKE_STEPS = [
-  {
-    id: "ping",
-    label: "Waking up the backend servers",
-    eta: "~30–60 sec",
-    detail: "Quantiva runs on Render's free hosting tier, which automatically shuts down idle servers after 15 minutes to conserve resources. Your request just triggered a \"cold start\" — all 4 microservices are booting up now. This is completely normal and only happens on the first request per session.",
-  },
-  {
-    id: "queue",
-    label: "Servers online — connecting job queue",
-    eta: "~3 sec",
-    detail: "All 4 services are responding. The system is now initialising RabbitMQ, the internal message broker that routes analysis jobs to the right workers. Think of it as the dispatcher for the system.",
-  },
-  {
-    id: "workers",
-    label: "Running analysis workers in parallel",
-    eta: "~5 sec",
-    detail: "Three independent workers are now running simultaneously — one each for EMA, SMA, and RSI. Results are combined and returned once all three complete.",
-  },
-];
+const API_BASE = "https://api-quantiva.rayaanpasha.dev";
 
 const themes = {
   light: {
@@ -176,7 +155,6 @@ export default function Analysis() {
   const [startDate, setStartDate] = useState("2025-01-01");
   const [endDate, setEndDate] = useState("2025-02-01");
   const [loading, setLoading] = useState(false);
-  const [wakeStep, setWakeStep] = useState(-1);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const dropRef = useRef(null);
@@ -194,16 +172,7 @@ export default function Analysis() {
 
   const analyze = async () => {
     if (!selected) return;
-    setLoading(true); setError(null); setData(null); setWakeStep(0);
-    await Promise.allSettled([
-      fetch("https://quantiva-3-0-service-1.onrender.com/health"),
-      fetch("https://quantiva-3-0-service-2.onrender.com/health"),
-      fetch("https://quantiva-3-0-service-3.onrender.com/health"),
-      fetch("https://quantiva-3-0-service-4.onrender.com/health"),
-    ]);
-    setWakeStep(1);
-    await new Promise(r => setTimeout(r, 2000));
-    setWakeStep(2);
+    setLoading(true); setError(null); setData(null);
     try {
       const res = await fetch(`${API_BASE}/initiate-company-analysis`, {
         method: "POST",
@@ -216,9 +185,10 @@ export default function Analysis() {
     } catch (e) {
       setError(e.message);
     } finally {
-      setLoading(false); setWakeStep(-1);
+      setLoading(false);
     }
   };
+
 
   const candles = data?.data || data?.candles || [];
   const chartData = candles.map(c => ({
@@ -420,70 +390,6 @@ export default function Analysis() {
           </div>
         </div>
 
-        {/* Wake-up progress */}
-        {loading && wakeStep >= 0 && (
-          <div className="fade-up" style={{
-            background: t.surface, border: `1px solid ${t.border}`,
-            borderRadius: 12, padding: "22px 24px", marginBottom: 20,
-            boxShadow: t.shadow,
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 18 }}>
-              <div className="blink" style={{ width: 7, height: 7, borderRadius: "50%", background: t.amber, flexShrink: 0 }} />
-              <p style={{ fontSize: 13, fontWeight: 600, color: t.text }}>Analysis running</p>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-              {WAKE_STEPS.map((step, i) => {
-                const done = i < wakeStep;
-                const active = i === wakeStep;
-                return (
-                  <div key={step.id} style={{ display: "flex", gap: 14, position: "relative" }}>
-                    {i < WAKE_STEPS.length - 1 && (
-                      <div style={{
-                        position: "absolute", left: 12, top: 26, bottom: -4,
-                        width: 1.5, background: done ? t.accent : t.border,
-                        transition: "background 0.4s",
-                      }} />
-                    )}
-                    <div style={{ flexShrink: 0, marginTop: 1 }}>
-                      <div style={{
-                        width: 25, height: 25, borderRadius: "50%",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: 10, fontFamily: "'DM Mono', monospace", fontWeight: 600,
-                        background: done ? t.accentBg : active ? t.amberBg : t.surfaceAlt,
-                        border: `1.5px solid ${done ? t.accent : active ? t.amber : t.border}`,
-                        color: done ? t.accent : active ? t.amber : t.textMuted,
-                        transition: "all 0.3s",
-                      }}>
-                        {done ? "✓" : i + 1}
-                      </div>
-                    </div>
-                    <div style={{ paddingBottom: 18, flex: 1 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: active ? 8 : 0 }}>
-                        <p style={{ fontSize: 13, fontWeight: 500, color: i > wakeStep ? t.textMuted : t.text, transition: "color 0.3s" }}>
-                          {step.label}
-                        </p>
-                        {active && (
-                          <span style={{ fontSize: 10, color: t.amber, fontFamily: "'DM Mono', monospace" }}>
-                            {step.eta}
-                          </span>
-                        )}
-                      </div>
-                      {active && (
-                        <div style={{
-                          background: t.amberBg, border: `1px solid ${t.amberBorder}`,
-                          borderRadius: 8, padding: "10px 14px",
-                          fontSize: 12, color: t.textSub, lineHeight: 1.65, maxWidth: 560,
-                        }}>
-                          {step.detail}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
 
         {/* Error */}
         {error && (

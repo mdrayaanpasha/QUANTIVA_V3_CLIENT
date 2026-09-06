@@ -10,7 +10,7 @@ const REPOS = [
     lang: "JavaScript",
     updated: "14 min ago",
     href: `${GITHUB_BASE}/QUANTIVA_3.0_SERVICE_1`,
-    live: "https://quantiva-3-0-service-1.onrender.com/",
+    live: "https://api-quantiva.rayaanpasha.dev",
     badge: "core",
   },
   {
